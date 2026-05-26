@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EcoPulse Watch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --yellow:#e8ff7a;
+    --blue:#4f5fd6;
+    --blue-dark:#1f2a6b;
+    --card:rgba(180,200,235,0.55);
+    --input:rgba(200,215,240,0.55);
+    --gray:#bfc3c8;
+    --danger:#e63946;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Poppins',system-ui,sans-serif}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 20% 10%, #d8c5b8 0 8%, transparent 9%),
+      radial-gradient(circle at 85% 15%, #d8c5b8 0 6%, transparent 7%),
+      radial-gradient(circle at 95% 55%, #e8d6c4 0 7%, transparent 8%),
+      radial-gradient(circle at 10% 70%, #d8c5b8 0 5%, transparent 6%),
+      linear-gradient(160deg,#7fa9e0 0%,#a8c5ec 40%,#8fb3e0 100%);
+    background-color:#8fb3e0;
+    padding:40px 16px;
+    position:relative;
+    overflow-x:hidden;
+  }
+  body::before{
+    content:"";position:absolute;inset:0;z-index:0;
+    background:
+      radial-gradient(ellipse 60% 25% at 50% 0%, #1f2a6b 0%, transparent 60%),
+      radial-gradient(ellipse 45% 30% at 30% 100%, #1f3a8a 0%, transparent 60%),
+      radial-gradient(ellipse 40% 20% at 80% 60%, #2c4a9c 0%, transparent 60%);
+    opacity:.7;pointer-events:none;
+  }
+  .container{position:relative;z-index:1;max-width:600px;margin:0 auto;display:flex;flex-direction:column;gap:32px}
+  h1{
+    font-family:'Bagel Fat One',cursive;
+    text-align:center;
+    font-size:clamp(2.5rem,7vw,4rem);
+    color:var(--yellow);
+    letter-spacing:2px;
+  }
+  .card{
+    background:var(--card);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    border-radius:28px;
+    padding:28px;
+    box-shadow:0 10px 30px rgba(0,0,0,.15);
+    display:flex;flex-direction:column;gap:16px;
+  }
+  .card h2{text-align:center;font-size:1.5rem;font-weight:700;color:var(--blue)}
+  .card.microbit h2,.card.sensor h2{color:var(--yellow)}
+  input{
+    width:100%;
+    border:2px solid rgba(255,255,255,.95);
+    background:var(--input);
+    border-radius:999px;
+    padding:14px 24px;
+    color:var(--blue-dark);
+    font-size:1rem;
+    outline:none;
+    transition:border-color .2s;
+  }
+  input::placeholder{color:rgba(31,42,107,.4)}
+  input:focus{border-color:var(--yellow)}
+  button{
+    width:100%;border:none;cursor:pointer;border-radius:999px;
+    padding:14px;font-size:1rem;font-weight:700;
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    transition:filter .2s, background .2s, color .2s;
+  }
+  button:hover{filter:brightness(1.05)}
+  .btn-firebase{background:var(--yellow);color:var(--blue-dark)}
+  .btn-bt{background:var(--gray);color:rgba(255,255,255,.85)}
+  .btn-bt.active{background:var(--blue);color:#fff}
+  .sensor-display{text-align:center;padding:16px 0}
+  .sensor-num{
+    font-family:'Bagel Fat One',cursive;
+    font-size:5rem;color:var(--yellow);line-height:1;
+  }
+  .sensor-label{margin-top:8px;font-size:1.25rem;font-weight:700;color:var(--yellow)}
+  .danger .sensor-num,.danger .sensor-label{color:var(--danger)}
+  svg{width:20px;height:20px}
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>ECOPULSE WATCH</h1>
+
+    <section class="card">
+      <h2>Cloud Sync</h2>
+      <input type="text" placeholder="API key" id="apiKey" />
+      <input type="text" placeholder="Database URL" id="dbUrl" />
+      <input type="text" placeholder="Node Path" id="nodePath" />
+      <button class="btn-firebase">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        Connect to Firebase
+      </button>
+    </section>
+
+    <section class="card microbit">
+      <h2>Microbit</h2>
+      <button class="btn-bt active" id="btnConnect">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m7 7 10 10-5 5V2l5 5L7 17"/></svg>
+        Connect
+      </button>
+      <button class="btn-bt" id="btnDisconnect">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m17 17-5 5V12l-5 5"/><path d="m2 2 20 20"/><path d="M14.5 9.5 17 7l-5-5v4.5"/></svg>
+        Not Connect
+      </button>
+    </section>
+
+    <section class="card sensor">
+      <h2>Live Sensor Data</h2>
+      <input type="number" id="sensorInput" value="350" />
+      <div class="sensor-display" id="display">
+        <div class="sensor-num" id="sensorNum">350</div>
+        <div class="sensor-label" id="sensorLabel">(Normal)</div>
+      </div>
+    </section>
+  </div>
+
+<script>
+  const btnC = document.getElementById('btnConnect');
+  const btnD = document.getElementById('btnDisconnect');
+  btnC.addEventListener('click',()=>{btnC.classList.add('active');btnD.classList.remove('active')});
+  btnD.addEventListener('click',()=>{btnD.classList.add('active');btnC.classList.remove('active')});
+
+  const input = document.getElementById('sensorInput');
+  const num = document.getElementById('sensorNum');
+  const label = document.getElementById('sensorLabel');
+  const display = document.getElementById('display');
+  input.addEventListener('input',()=>{
+    const v = Number(input.value)||0;
+    num.textContent = v;
+    if(v>=500){display.classList.add('danger');label.textContent='(Bahaya)';}
+    else{display.classList.remove('danger');label.textContent='(Normal)';}
+  });
+</script>
+</body>
+</html>
